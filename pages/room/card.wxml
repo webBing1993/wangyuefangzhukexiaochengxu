@@ -1,0 +1,34 @@
+<view class="body">
+  <view class="vmopen">
+    <block wx:if="{{status==1}}">
+      {{number}}%
+    </block>
+    <block wx:else>
+      <image src="../../images/ic_open_success.png" class="ic_open_success" bindtap="bindOpenRoom"></image>
+    </block>
+  </view>
+  <label class="kaimenzhong">
+    <block wx:if="{{status==0}}">
+      开门成功
+    </block>
+    <block wx:elif="{{status==1}}">
+      开门中...
+    </block>
+    <block wx:elif="{{status==2}}">
+      开门失败
+    </block>
+  </label>
+  <label class="wenxintishi">{{status==1?'为确保开门成功，请靠近门锁':'请及时开门! 如超时, 可再次点击“门锁按钮”'}}</label>
+  <view class="vmroom">
+    <view class="vmroomconent">
+      <view class="labroom">{{roomName}}</view>
+      <view class="labroomtype">住客卡</view>
+    </view>
+    <view class="vmroomyouxiaoqi">
+      <view class="vmyxqz">有效期至</view>
+      <view class="vmshijian">{{predictCheckoutTime}}</view>
+    </view>
+  </view>
+
+  <view class="home" bindtap="goHome">返回首页</view>
+</view>

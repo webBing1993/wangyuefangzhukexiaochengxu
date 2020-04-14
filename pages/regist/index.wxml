@@ -1,0 +1,176 @@
+<view class='body'>
+  <view class="dengjitishi">
+    根据公安要求，请如实填写入住人数，未按要求登记，一切后果由旅客本人承担！
+  </view>
+
+  <block wx:if="{{status==0}}">
+    <!-- 未登记 -->
+    <view class="userdengji1" wx:if="{{isOwner}}">
+      <view class="flexrow xingming">
+        <text decode="{{true}}" space="{{true}}">姓&nbsp;&nbsp;&nbsp;名</text>
+        <input placeholder="请输入您的姓名" value="{{userInfo.name}}" placeholder-class='placeholder' maxlength="6" bindinput="nameInput" data-id="0">
+        </input>
+      </view>
+      <view class="flexrow xingming">
+        <label>手机号</label>
+        <!-- <label class="shoujihao">18310490117</label> -->
+        <input placeholder="请输入您的手机号" placeholder-class='placeholder' maxlength="11" type='number' bindinput="phoneInput" data-id="0" value="{{userInfo.mobile}}">
+        </input>
+      </view>
+    </view>
+    <block wx:for="{{guestUserList}}" wx:for-index="index" data-id='{{item.code}}'>
+      <block wx:if="{{item.code!=0&&item.deleted!=true&&isOwner}}">
+        <view class="tongzhuren">
+          <view class="flexrow tongzhuren1">
+            <text decode="{{true}}" space="{{true}}">同住人</text>
+            <view class="vmdelete flexrow" bindtap="deleteUser" data-id="{{item.code}}">
+              <image src="../../images/ic_ruzhudengji_delete.png"></image> 删除</view>
+          </view>
+          <view class="flexrow xingming">
+            <text decode="{{true}}" space="{{true}}">姓&nbsp;&nbsp;&nbsp;名</text>
+            <input placeholder="请输入您的姓名" placeholder-class='placeholder' maxlength="6" bindinput="nameInput" data-id="{{item.code}}" value="{{item.name}}"></input>
+          </view>
+          <view class="flexrow xingming">
+            <label>手机号</label>
+            <input class="txtmobile" type='number' placeholder="请输入您的手机号" placeholder-class='placeholder' bindinput="phoneInput" maxlength="11" data-id="{{item.code}}" value="{{item.mobile}}"></input>
+          </view>
+        </view>
+      </block>
+    </block>
+
+  </block>
+  <block wx:if="{{status==1}}" wx:for="{{registerUserList}}" wx:for-index="index" data-id='{{item.id}}'>
+    <!-- 登记过 -->
+    <view class="jianju"></view>
+    <view class="yidengji flexrow">
+      <block wx:if="{{item.identityCheckStatus=='PASS'}}">
+        <view class="yidengjishanchu flexcloumn" data-id="{{item.id}}">
+          <image src="../../images/ic_check.png"></image>
+          <label style="color:#FBC025">已核验</label>
+        </view>
+      </block>
+      <block wx:else>
+        <block wx:if="{{isOwner}}">
+          <view class="yidengjishanchu flexcloumn" bindtap="deleteGuestUser" data-id="{{item.id}}">
+            <image src="../../images/ic_delete.png"></image>
+            <label>删除</label>
+          </view>
+        </block>
+        <block wx:else>
+          <view class="yidengjishanchu flexcloumn" data-id="{{item.id}}">
+          </view>
+        </block>
+
+      </block>
+
+      <view class="jianju3"></view>
+      <view class="yidengjiyonghu flexcloumn">
+        <block wx:if="{{item.identityCheckStatus=='PASS'}}">
+          <view class="flexrow yidengjiming" data-id="{{item.id}}">
+            <label>{{item.name}}</label>
+          </view>
+          <view class="jianju4"></view>
+          <label class="yidengjishouji">{{item.mobile}}</label>
+        </block>
+        <block wx:else>
+          <block wx:if="{{isOwner}}">
+            <view class="flexrow yidengjiming" bindtap="updateUser" data-id="{{item.id}}">
+              <label>{{item.name}}</label>
+              <image src="../../images/ic_xiugai.png"> </image>
+            </view>
+            <view class="jianju4"></view>
+            <label class="yidengjishouji" bindtap="updateUser">{{item.mobile}}</label>
+          </block>
+          <block wx:else>
+            <view class="flexrow yidengjiming" data-id="{{item.id}}">
+              <label>{{item.name}}</label>
+
+            </view>
+            <view class="jianju4"></view>
+            <label class="yidengjishouji">{{item.mobile}}</label>
+          </block>
+        </block>
+      </view>
+
+      <block wx:if="{{item.identityCheckStatus=='PASS'}}">
+        <view class="flexrow">
+          <image src="../../images/ic_havechecked.png" class="yiheyan"> </image>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="paizhaoheyan flexrow" bindtap="bindConfirm" data-id="{{item.id}}">
+          <image src="../../images/ic_photo.png"> </image>
+          <label>拍照核验</label>
+        </view>
+      </block>
+    </view>
+  </block>
+  <block wx:if="{{status==1}}" wx:for="{{guestUserList}}" wx:for-index="index" data-id='{{item.code}}'>
+    <block wx:if="{{item.deleted!=true}}">
+      <view class="tongzhuren">
+        <view class="flexrow tongzhuren1">
+          <text decode="{{true}}" space="{{true}}">同住人</text>
+          <view class="vmdelete flexrow" bindtap="deleteUser" data-id="{{item.code}}">
+            <image src="../../images/ic_ruzhudengji_delete.png"></image> 删除</view>
+        </view>
+        <view class="flexrow xingming">
+          <text decode="{{true}}" space="{{true}}">姓&nbsp;&nbsp;&nbsp;名</text>
+          <input placeholder="请输入您的姓名" placeholder-class='placeholder' maxlength="6" bindinput="nameInput" data-id="{{item.code}}" value="{{item.name}}"></input>
+        </view>
+        <view class="flexrow xingming">
+          <label>手机号</label>
+          <input class="txtmobile" type='number' placeholder="请输入您的手机号" placeholder-class='placeholder' bindinput="phoneInput" maxlength="11" data-id="{{item.code}}" value="{{item.mobile}}"></input>
+        </view>
+      </view>
+    </block>
+  </block>
+
+  <!-- 添加同住人 -->
+  <view class="tianjia" bindtap="addGuestUser" wx:if="{{isOwner}}">+ 添加同住人</view>
+
+  <view class="vmbottom">
+    <view class="ruzhutishi">
+      我们承诺您的信息仅用于本次入住，不会在未经您允许的情况下，将您的信息透露给任何第三方
+    </view>
+    <view class="wancheng" bindtap="bindHome">完成</view>
+  </view>
+  <!-- 弹窗 修改顾客信息 -->
+  <view class="modal-mask" bindtap="hideModal" catchtouchmove="preventTouchMove" wx:if="{{showUpdate}}" data-item='showUpdate'></view>
+  <view class="modal-dialog modal-content" wx:if="{{showUpdate}}">
+    <view class="modal-header">修改顾客信息</view>
+    <view class="jianju5"></view>
+    <view class='flexrow modal-content-user'>
+      <label>姓名</label>
+      <input value="{{registerUserList[checkedIndex].name}}" bindinput="inputUpdateName"></input>
+    </view>
+    <view class="xian"></view>
+    <view class="jianju6"></view>
+    <view class='flexrow modal-content-user'>
+      <label>手机号</label>
+      <input value="{{registerUserList[checkedIndex].mobile}}" type='number' maxlength="11" bindinput="inputUpdateMobile"></input>
+    </view>
+    <view class="xian"></view>
+
+    <view class="modal-foot-confirm flexrow">
+      <view class="modal-foot-cancel" bindtap="hideModal" data-item='showUpdate'>取消</view>
+      <view class="modal-foot" bindtap="confirmUpdateUser" data-item='showUpdate'>确认</view>
+    </view>
+  </view>
+
+
+
+  <!-- 弹框 未全部完成核验 -->
+  <view class="modal-mask" bindtap="hideModal" catchtouchmove="preventTouchMove" wx:if="{{showVerification}}" data-item='showVerification'></view>
+  <view class="modal-dialog-heyan" wx:if="{{showVerification}}">
+    <image src="../../images/img_police.png"></image>
+    <view class="gongantishi">
+      <text class="gongantishi-col">当前入住人未全部完成核验</text>
+      <text>，根据公安要求，请如实登记入住人数，未按要求登记，一切后果由旅客本人承担！</text>
+    </view>
+
+    <view class="modal-foot-confirm flexrow">
+      <view class="modal-foot-cancel" bindtap="hideModal" data-item='showVerification' bindtap="bindLater">稍后核验</view>
+      <view class="modal-foot" bindtap="hideModal" data-item='showVerification' bindtap="bindUrent">立即核验</view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,50 @@
+<view>
+  <view class="jianju"></view>
+  <view class="flexrow process">
+    <label class="oneprocess">1</label>
+    <label class="shimingrenzheng">实名认证</label>
+    <image class="next" src="../../images/ic_arrow_right_orange.png"></image>
+
+    <label class="twoprocess">2</label>
+    <label class="noshimingrenzheng">实人认证</label>
+    <image class="next" src="../../images/ic_arrow_right_grew.png"></image>
+
+    <label class="twoprocess">3</label>
+    <label class="noshimingrenzheng">开门入住</label>
+  </view>
+  <view class="hang"></view>
+  <view class="xingming flexrow xingmingborder">
+    <label>姓 名</label>
+    <label class="name">{{userInfo.name}}</label>
+  </view>
+  <view class="xingming flexrow xingmingborder">
+    <label>身份证号</label>
+    <input class="card" placeholder="请输入您的证件号码" type="idcard" placeholder-class='placeholder' maxlength="18" bindinput="idcardInput" value="{{userInfo.idcard}}"></input>
+  </view>
+   <view class="xingming flexrow">
+  <view class="section__title">民族</view>
+  <picker bindchange="bindPickerChange"  range="{{nationList}}" range-key="{{'name'}}" value='{{nationList[rangekey].code}}'>
+    <view  class="picker nation">
+    <!-- {{nationList[rangekey].name}} -->
+    {{nationName!=null?nationName:''}}
+    </view>
+  </picker>
+     </view>
+  <view class="hang"></view>
+  <view class="phototitle">拍摄您的二代身份证</view>
+  <view class="flexrow">
+    <view class="vmzhengmian flexcloumn" bindtap="bindcamera" data-item="front">
+      <image class="zhengmian" src="{{userInfo.idcardImgObverse!=null?userInfo.idcardImgObverse:'../../images/zhengmian.png'}}" style="angle:90"></image>
+      <label class="paizhaotishi">点击拍摄人像面</label>
+      <image src="../../images/camera.png" class="camera"></image>
+    </view>
+
+    <view class="vmfanmian flexcloumn" bindtap="bindcamera" data-item="behind">
+      <image class="zhengmian" src="{{userInfo.idcardImgReverse!=null?userInfo.idcardImgReverse:'../../images/fanmian.png'}}"></image>
+      <label class="paizhaotishi">点击拍摄国徽面</label>
+       <image src="../../images/camera.png" class="camera"></image>
+    </view>
+  </view>
+
+    <view class="xiayibu" bindtap="bindNext">下一步</view>
+</view>

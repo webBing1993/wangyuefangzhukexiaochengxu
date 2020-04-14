@@ -1,0 +1,29 @@
+{
+  "pages": [
+    "pages/user/login",
+    "pages/room/test",
+    "pages/room/card",
+    "pages/regist/Idcard",
+    "pages/regist/index",
+    "pages/main/index",
+    "pages/regist/face",
+    "pages/regist/camera",
+    "pages/order/index",
+    "pages/order/notfound",
+    "pages/index/index",
+    "pages/logs/logs"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "网约房系统住客端",
+    "navigationBarTextStyle": "black"
+  },
+  "plugins": {
+    "bleSdk-plugin": {
+      "version": "1.3.3",
+      "provider": "wxba7ce98e439ddc81"
+    }
+  },
+  "sitemapLocation": "sitemap.json"
+}

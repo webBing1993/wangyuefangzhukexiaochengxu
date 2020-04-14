@@ -1,0 +1,7 @@
+<view class="body">
+<image src="../../images/img_no_order.png"></image>
+<view class="message">
+<label>未查询到</label><label class="mobile">【{{mobile}}】</label><label>预订的订单</label>
+</view>
+<button bindtap="bindLogin">使用其他手机号登录</button>
+</view>

@@ -1,0 +1,108 @@
+<block wx:if="{{SearchOrderData}}">
+  <view class="body">
+    <image src="{{roomList[selectedIndex].roomGroup.mainImage==null?'../../images/banner1.png':roomList[selectedIndex].roomGroup.mainImage}}" class="banner"></image>
+    <view class="bannervw">
+      <label>{{roomList[selectedIndex].roomGroupName==null?'':roomList[selectedIndex].roomGroupName}}</label>
+    </view>
+
+    <scroll-view scroll-x="true" bindscroll="scroll" scroll-with-animation='true'>
+      <view class="scrollview">
+        <block wx:for="{{roomList}}">
+          <view style="width:610rpx;margin-left:{{showRoomLeft}}rpx;margin-bottom:6rpx;padding-right:{{index==(roomList.length-1)?'40rpx':'0rpx'}}">
+            <view class="room">
+              <view class="roomtime flexrow">
+                <view class="roomleft flexcloumn">
+                  <label class="roomday">{{item.showCheckInDate}}</label>
+                  <label class="roomweekday">{{item.showCheckInWeekday}} {{item.showCheckInTime}}</label>
+                </view>
+
+                <view class="roomcenter flexcloumn">
+                  <label class="roomjiwan">共{{item.dayNumber}}晚</label>
+                  <label class="xian"></label>
+                </view>
+
+                <view class="roomleft flexcloumn">
+                  <label class="roomday">{{item.showCheckoutDate}}</label>
+                  <label class="roomweekday">{{item.showCheckoutWeekday}} {{item.showCheckoutTime}}</label>
+                </view>
+              </view>
+              <view class="viewshare">
+                <block wx:if="{{item.liveStatus=='READY'||item.liveStatus=='IN'||item.liveStatus=='REGISTER'}}">
+                  <image src="../../images/ic_share_room_card.png" class="imshare"></image>
+                  <button open-type="share" class="btnshare" data-roomOrderId="{{item.id}}"></button>
+                </block>
+
+              </view>
+              <view class="roomNumber flexcloumn">
+                房间号：{{item.roomName}}
+              </view>
+              <view class="roomopen flexrow">
+                <block wx:if="{{item.liveStatus=='READY'||item.liveStatus=='IN'||item.liveStatus=='REGISTER'}}">
+                  <image src="../../images/img_click_open.png" class="clickroomopen" bindtap="bindOpenRoom" data-id="{{item.id}}" data-liveStatus="{{item.liveStatus}}" data-ownerid="{{item.ownerId}}"></image>
+                  <view>
+                    <view class="checkin flexrow" bindtap="checkInRegist" data-id="{{item.id}}" data-ownerid="{{item.ownerId}}">
+                      <image src="../../images/ic_together.png" class="checkimage"></image>
+                      同住登记</view>
+                    <view class="checkout flexrow" bindtap="checkOutAction" data-id="{{item.id}}">
+                      <image src="../../images/ic_tuifang.png" class="checkimage"></image>
+                      申请退房</view>
+                  </view>
+                </block>
+                <block wx:else>
+                  <view class="ruzhudengji" bindtap="checkInRegist" data-id="{{item.id}}" data-ownerid="{{item.ownerId}}">
+                    入住登记
+                  </view>
+                </block>
+              </view>
+            </view>
+          </view>
+        </block>
+      </view>
+    </scroll-view>
+
+    <view class="hoteltitle">民宿位置</view>
+    <view class="mingsuweizhi" bindtap="get_Location">
+      <label>{{roomList[selectedIndex].address}} </label>
+    </view>
+
+    <view class="hoteltitle">联系房东</view>
+    <view class="lianxifangdong" data-tel="{{roomList[selectedIndex].roomGroup.keeperPhone}}" bindtap="get_Tel">
+     <label>{{}}    {{roomList[selectedIndex].roomGroup.keeperPhone}} </label>
+    </view>
+
+    <!-- <view data-tel="{{roomList[selectedIndex].roomGroup.keeperPhone}}" bindtap="get_Tel">
+      <image src="../../images/img_contact.png" style="width:718rpx;height:172rpx"></image>
+    </view>
+    <view style="font-size: 14px;color: #F9B444;margin:-120rpx 0 0 -280rpx">
+      {{roomList[selectedIndex].roomGroup.keeperPhone}}
+    </view> -->
+
+    <view class="hoteltitle">入住须知</view>
+    <view class="ruzhuxuzhi">{{roomList[selectedIndex].roomGroup.notice==null?'':roomList[selectedIndex].roomGroup.notice}}
+
+
+    </view>
+
+    <!--弹窗 未到退房时间-->
+    <view class="modal-mask" bindtap="hideModal" catchtouchmove="preventTouchMove" wx:if="{{noCheckoutshowModal}}" data-item='noCheckoutshowModal'></view>
+    <view class="modal-dialog modal-content" wx:if="{{noCheckoutshowModal}}">
+      <view class="modal-header">未到退房时间</view>
+      <view class="modal-message">请在退房当日申请，如需帮助请联系房东</view>
+      <view class="modal-foot" bindtap="hideModal" data-item='noCheckoutshowModal'>我知道了</view>
+    </view>
+
+
+    <!-- 彈窗 是否確認退房 -->
+    <view class="modal-mask" bindtap="hideModal" catchtouchmove="preventTouchMove" wx:if="{{confirmCheckoutshowModal}}" data-item='confirmCheckoutshowModal'></view>
+    <view class="modal-dialog modal-content" wx:if="{{confirmCheckoutshowModal}}">
+      <view class="modal-header">是否确认退房？</view>
+      <view class="modal-message">退房时请检查随身物品避免遗漏</view>
+      <view class="modal-foot-confirm flexrow">
+        <view class="modal-foot-cancel" bindtap="hideModal" data-item='confirmCheckoutshowModal'>取消</view>
+        <view class="modal-foot" bindtap="checkOutConfirm" data-item='confirmCheckoutshowModal'>确认退房</view>
+      </view>
+
+    </view>
+  </view>
+
+</block>

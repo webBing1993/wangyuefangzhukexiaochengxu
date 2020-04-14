@@ -1,0 +1,18 @@
+<view class="body" wx:if='{{showView==true}}'>
+  <view class="title">网约房系统住客端</view>
+  <view class="vwMobile">
+    <input placeholder="请输入手机号码" bindinput='mobileInput' type='number' maxlength="11" placeholder-class='placeholder' />
+    <view bindtap="bindSmsCode" data-value="{{setInter}}">{{setInter}}</view>
+  </view>
+  <view class="xian"></view>
+  <view class='vwyanzhengma'>
+    <input placeholder="请输入验证码" type='number' bindinput="smsCodeInput" maxlength="6" placeholder-class='placeholder' />
+  </view>
+  <view class="xian"></view>
+    <button class='btnLogin' bindtap="bindLogin">登录</button>
+    <button class='btnwechat' open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">
+    <image src='../../images/ic_wechat.png'></image>
+    <view>微信手机号授权登录</view>
+  </button>
+   <!-- <button class='btnLogin' bindtap="bindLoginTest">登录测试</button> -->
+</view>

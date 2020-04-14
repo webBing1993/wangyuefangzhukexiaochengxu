@@ -1,0 +1,3 @@
+<button bindtap='bindBluetoothDevices'>搜索蓝牙设备</button>
+<button bindtap='bindOpenRoom'>开门</button>
+<button bindtap='bindBattery'>获取电量</button>

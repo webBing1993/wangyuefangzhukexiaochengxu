@@ -1,0 +1,36 @@
+.body {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+image {
+  width: 298rpx;
+  height: 334rpx;
+  margin-top: 154rpx;
+}
+
+.message {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  font-size: 30rpx;
+  color: #666;
+  margin-top: 152rpx;
+}
+
+.mobile {
+  color: #333;
+}
+
+button {
+  width: 550rpx;
+  height: 90rpx;
+  background: #f2c03e;
+  border-radius: 25px;
+  font-size: 15px;
+  color: #fff;
+  margin-top: 176rpx;
+  line-height: 90rpx;
+}
