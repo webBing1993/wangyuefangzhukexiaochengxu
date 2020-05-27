@@ -55,7 +55,7 @@ margin-top: 120rpx;
 }
 
 .vmroomyouxiaoqi {
-  margin: 36rpx 0 0 60rpx;
+  margin: 10rpx 0 0 60rpx;
   display: flex;
   flex-direction: row;
 }

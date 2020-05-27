@@ -46,10 +46,12 @@ App({
   globalData: {
     iotBleSdk:null,
     userInfo: null,
+    userPhone:'',
     SearchOrderData: true,
     GuestRoomList:null,
     currentRoomInfo:null,
     currentRoomCheckinTime:null,//当前选择的房间入住时间
-    mobile:''
+    mobile:'',
+    maxRssi:90
   }
 })

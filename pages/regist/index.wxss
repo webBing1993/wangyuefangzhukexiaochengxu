@@ -32,7 +32,7 @@
 
 .userdengji1 {
   width: 678rpx;
-  height: 220rpx;
+  /* height: 220rpx; */
   box-shadow: 0 0 9px 0 rgba(66,66,66,0.20);
   margin-top: 10rpx;
 }
@@ -41,10 +41,25 @@
   font-size: 15px;
   color: #333;
 }
-
+.nation{
+  width:240rpx;
+  margin-left: 304rpx;
+  height: 80rpx;
+  text-align: right
+}
 .xingming input {
   margin-left: 304rpx;
   width: 240rpx;
+  text-align: right;
+}
+.zhengjianhao{
+   margin: 52rpx 0 0 34rpx;
+  font-size: 15px;
+  color: #333;
+}
+.zhengjianhao input{
+    margin-left: 244rpx;
+  width: 300rpx;
   text-align: right;
 }
 
@@ -54,7 +69,7 @@
 
 .tongzhuren {
   width: 678rpx;
-  height: 300rpx;
+  /* height: 300rpx; */
   box-shadow: 0 0 9px 0 rgba(66, 66, 66, 0.20);
   margin-top: 24rpx;
 }
@@ -233,7 +248,7 @@
   height: 580rpx;
   overflow: hidden;
   position: fixed;
-  top: 50%;
+  top: 40%;
   left: 0;
   z-index: 9999;
   background: white;

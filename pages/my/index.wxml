@@ -1,0 +1,29 @@
+<view class="body">
+  <view class="bg_mine">
+  <view class="flexcloumn">
+  <button class="btnwechat" wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 
+  <image src="../../images/ic-head-notlogin.png"></image>
+   </button>
+   <block wx:else>
+      <image  class="wechatlog" src="{{userInfo.avatarUrl}}" mode="cover"></image>
+    </block>
+  </view>
+  <block wx:if="{{!hasUserInfo && canIUse}}">
+   <view class="flexcloumn">
+   <label class="shouquan">授权微信头像</label>
+  </view>
+  </block>
+  <block wx:else>
+     <view class="flexcloumn">
+   <label class="shouquan">{{userInfo.nickName}}</label>
+  </view>
+  </block>
+  
+  </view>
+  <view class="flexcloumn">
+   <view class="logout flexrowcenter">
+   <image class="ic_exit" src="../../images/ic_exit.png" bindtap="get_logout"></image>
+   <label class="labexit" bindtap="get_logout">退出登录</label>
+   </view>
+  </view>
+</view>

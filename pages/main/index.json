@@ -1,5 +1,10 @@
 {
   "navigationBarTitleText": "网约房系统住客端",
   "enablePullDownRefresh": true,
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于小程序位置接口的效果展示"
+    }
+  },
   "usingComponents": {}
 }

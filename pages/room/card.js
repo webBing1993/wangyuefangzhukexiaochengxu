@@ -45,7 +45,7 @@ Page({
     } else if (that.data.status == 1) {
       console.log('倒计时开门结束');
       that.setData({
-        status:2
+        status: 2
       });
       app.globalData.iotBleSdk.cancelTask(() => {
         console.log('停止蓝牙开门');
@@ -65,8 +65,8 @@ Page({
       isShowTip: false,
       status: 1
     });
-   that.daojishi(10);
-    var bluetoothRssiInfo = "{\"" + bluetoothName + "\":{\"max\":99,\"min\":1}}";
+    that.daojishi(10);
+    var bluetoothRssiInfo = "{\"" + bluetoothName + "\":{\"max\":90,\"min\":1}}";
     var bluetoothRssi = JSON.parse(bluetoothRssiInfo)
     var r = app.globalData.iotBleSdk.startTask(
       ['' + bluetoothName + ''],
@@ -76,7 +76,7 @@ Page({
         commandKey: secret,
         lastLogTimestamp: 1540294526000
       }],
-      '01',
+      '00',
       null, {
         "controlPara": 0x00,
         "fixDeviceRtc": function(random, sn, func) {
@@ -118,6 +118,8 @@ Page({
     console.log('返回结果', obj);
     let that = this;
     if (obj.code == 0) {
+      //手机振动
+      wx.vibrateLong();
       that.setData({
         status: 0
       });
@@ -137,13 +139,17 @@ Page({
         isShowTip: true,
         status: 2
       });
-      wx.showModal({
-        title: '提示',
-        content: obj.msg,
-        showCancel: false,
-        mask: false
-      });
-
+      if(obj.code==12){
+        obj.msg = '未搜索到设备，请靠近门锁尝试';
+      }
+      if (obj.code != 1) {
+        wx.showModal({
+          title: '提示',
+          content: obj.msg,
+          showCancel: false,
+          mask: false
+        });
+      }
     }
 
   },
@@ -187,7 +193,7 @@ Page({
     )
     return hexArr.join('');
   },
-  goHome:function(){
+  goHome: function() {
     wx.reLaunch({
       url: '../main/index',
     })

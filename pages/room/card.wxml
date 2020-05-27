@@ -15,7 +15,7 @@
       开门中...
     </block>
     <block wx:elif="{{status==2}}">
-      开门失败
+      开门失败,请点击重试
     </block>
   </label>
   <label class="wenxintishi">{{status==1?'为确保开门成功，请靠近门锁':'请及时开门! 如超时, 可再次点击“门锁按钮”'}}</label>

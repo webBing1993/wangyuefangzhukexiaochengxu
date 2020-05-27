@@ -112,6 +112,7 @@ Page({
     var token = result.header['X-auth-token'];
     console.log('token:' + token);
     UIhelper.setToken(token);
+    app.globalData.userPhone = result.data.data.phoneNumber;
     var jsCodeUserId = result.data.data.userId;
     console.log('userId:' + jsCodeUserId);
     UIhelper.setJsCodeUserId(jsCodeUserId);
@@ -176,6 +177,7 @@ Page({
           var token = result.header['X-auth-token'];
           console.log('token:' + token);
           UIhelper.setToken(token);
+          app.globalData.userPhone = result.data.data.phoneNumber;
         });
       });
     }

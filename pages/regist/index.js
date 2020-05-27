@@ -13,7 +13,7 @@ Page({
     id: '',
     userInfo: {},
     checkedIndex: 0,
-    isOwner:true
+    isOwner: true
   },
   updateUser: function(e) {
     var that = this;
@@ -42,6 +42,7 @@ Page({
     let that = this;
     that.data.registerUserList[that.data.checkedIndex].mobile = e.detail.value;
   },
+
   showVerification: function() {
     var that = this;
     that.setData({
@@ -78,7 +79,7 @@ Page({
       //判断是否大于当前时间
       if (new Date() < app.globalData.currentRoomCheckinTime) {
         UIhelper.showMessage('未到入住时间');
-      }else{
+      } else {
         //判断是否有编辑过登记人
         wx.navigateTo({
           url: '../regist/Idcard?userId=' + userId + '&orderId=' + that.data.id,
@@ -126,73 +127,53 @@ Page({
     if (!that.verificatioin()) {
       return;
     }
-    if (that.data.status == 1) {
-      //判断是否有添加同住人
-      if (that.data.guestUserList.length > 0) {
-        var data = [];
-        for (var i = 0; i < that.data.guestUserList.length; i++) {
-          var item = that.data.guestUserList[i];
-          if (item.deleted != true) {
-            data.push({
-              name: item.name,
-              mobile: item.mobile
-            });
-          }
-        }
-        UIhelper.saveRoomOrderGuest(that.data.id, data, function(result) {
-          //刷新界面数据
-          if (that.data.showVerification == false) {
-            that.getRoomOrderUser(function() {
-              that.setData({
-                showVerification: true
-              });
-            });
-          } else {
-            wx.reLaunch({
-              url: '../main/index',
+    if (that.data.guestUserList.length == 0) {
+      wx.reLaunch({
+        url: '../main/index',
+      })
+      return
+    }
+    wx.canvasToTempFilePath({
+      x: 0, //画布x轴起点
+      y: 0, //画布y轴起点
+      width: that.data.width, //画布宽度
+      height: that.data.height, //画布高度
+      canvasId: 'attendCanvasId',
+      success: function(resImg) {
+        UIhelper.uploadFile(resImg.tempFilePath, function(result) {
+          if (that.data.guestUserList.length > 0) {
+            var data = [];
+            for (var i = 0; i < that.data.guestUserList.length; i++) {
+              var item = that.data.guestUserList[i];
+              if (item.deleted != true) {
+                data.push({
+                  name: item.name,
+                  mobile: item.mobile,
+                  idcard: item.idcard,
+                  nationCode: item.nationCode,
+                  nationName: item.nationName,
+                  idcardImgReverse: result.data,
+                  idcardImgObverse: result.data,
+                  livePhoto: result.data,
+                });
+              }
+            }
+            UIhelper.saveRoomOrderGuest(that.data.id, data, function(res) {
+              UIhelper.getRoomOrderGuest(that.data.id, function(result) {
+                if (result.data.data.length != 0) {
+                  UIhelper.guestIdentityCheck(that.data.id, result.data.data[0].id, function(result) {
+                    //判断是否到入住时间
+                    wx.reLaunch({
+                      url: '../main/index',
+                    })
+                  });
+                }
+              })
             })
           }
-        })
-      } else {
-        //判断当前登记人员是否都核验过
-        var identityCheckAllStatus = false;
-        for (var i = 0; i < that.data.registerUserList.length; i++) {
-          if (that.data.registerUserList[i].identityCheckStatus != 'PASS') {
-            identityCheckAllStatus = true;
-            break;
-          }
-        }
-        if (identityCheckAllStatus) {
-          if (that.data.showVerification == false) {
-            that.getRoomOrderUser(function() {
-              that.setData({
-                showVerification: true
-              });
-            });
-          }
-        } else {
-          wx.reLaunch({
-            url: '../main/index',
-          })
-        }
+        });
       }
-    } else {
-      var data = [];
-      for (var i = 0; i < that.data.guestUserList.length; i++) {
-        var item = that.data.guestUserList[i];
-        if (item.deleted != true) {
-          data.push({
-            name: item.name,
-            mobile: item.mobile
-          });
-        }
-      }
-      UIhelper.saveRoomOrderGuest(that.data.id, data, function() {
-        wx.reLaunch({
-          url: '../main/index',
-        })
-      })
-    }
+    });
   },
   //校验输入手机号
   verificatioin: function() {
@@ -211,6 +192,18 @@ Page({
           UIhelper.showMessage('请输入正确的手机号');
           return false;
         }
+        if (that.data.guestUserList[i].idcard == '') {
+          UIhelper.showMessage('请输入您的身份证');
+          return false;
+        }
+        if (that.data.guestUserList[i].idcard.length != 18) {
+          UIhelper.showMessage('请输入正确的身份证号码');
+          return false;
+        }
+        if (!UIhelper.checkIdCard(that.data.guestUserList[i].idcard)) {
+          UIhelper.showMessage('请输入正确的身份证号码');
+          return false;
+        }
       }
     }
     return true;
@@ -222,7 +215,10 @@ Page({
     that.data.guestUserList.push({
       code: that.data.guestUserList.length,
       name: '',
-      mobile: ''
+      mobile: '',
+      idcard: '',
+      nationName: '汉族',
+      nationCode: '0'
     });
     that.setData({
       guestUserList: that.data.guestUserList
@@ -268,6 +264,11 @@ Page({
     var id = e.currentTarget.dataset.id
     that.data.guestUserList[id].mobile = e.detail.value;
   },
+  idcardInput: function(e) {
+    let that = this
+    var id = e.currentTarget.dataset.id
+    that.data.guestUserList[id].idcard = e.detail.value;
+  },
   /**
    * 生命周期函数--监听页面加载
    */
@@ -280,18 +281,18 @@ Page({
     }
     if (options.ownerId != undefined) {
       //判断userid和ownerid是否一致
-      console.log('getJsCodeUserId:'+UIhelper.getJsCodeUserId());
+      console.log('getJsCodeUserId:' + UIhelper.getJsCodeUserId());
       console.log('ownerId:' + options.ownerId);
-      if (UIhelper.getJsCodeUserId()==options.ownerId){
+      if (UIhelper.getJsCodeUserId() == options.ownerId) {
         that.setData({
           isOwner: true
         })
-      }else{
+      } else {
         that.setData({
           isOwner: false
         })
       }
-      
+
     }
   },
   getUserListCallBack: function(result) {
@@ -333,6 +334,24 @@ Page({
   onReady: function() {
     let that = this;
     that.getRoomOrderUser();
+    that.getNation();
+  },
+  getNation: function() {
+    let that = this
+    UIhelper.getNation(function(res) {
+      that.setData({
+        nationList: res.data.data
+      });
+    })
+  },
+  bindPickerChange: function(e) {
+    var that = this;
+    var id = e.currentTarget.dataset.id
+    that.data.guestUserList[id].nationName = that.data.nationList[e.detail.value].name;
+    that.data.guestUserList[id].nationCode = that.data.nationList[e.detail.value].code;
+    that.setData({
+      guestUserList: that.data.guestUserList,
+    });
   },
   getRoomOrderUser: function(callBackFun) {
     let that = this;
@@ -342,10 +361,24 @@ Page({
           code: 0,
           id: '',
           name: '',
-          mobile: ''
+          mobile: app.globalData.userPhone,
+          idcard: '',
+          nationName: '汉族',
+          nationCode: '0'
+        });
+        that.setData({
+          guestUserList: that.data.guestUserList
         });
       } else {
         that.data.registerUserList = [];
+        var identityCheckStatus=false
+        for (var i = 0; i < result.data.data.length; i++){
+          var item = result.data.data[i];
+          if (item.identityCheckStatus =='PASS'){
+            identityCheckStatus=true;
+            break;
+          }
+        }
         for (var i = 0; i < result.data.data.length; i++) {
           var item = result.data.data[i];
           that.data.registerUserList.push({
@@ -353,7 +386,9 @@ Page({
             id: item.id,
             name: item.name,
             mobile: item.mobile,
-            identityCheckStatus: item.identityCheckStatus
+            identityCheckStatus: identityCheckStatus == true ?'PASS': item.identityCheckStatus,
+            idcard: item.idcard,
+            nationName: item.nationName,
           });
         }
         that.setData({
@@ -368,6 +403,7 @@ Page({
     })
 
   },
+
   /**
    * 生命周期函数--监听页面显示
    */

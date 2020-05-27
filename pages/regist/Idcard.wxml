@@ -18,7 +18,7 @@
     <label class="name">{{userInfo.name}}</label>
   </view>
   <view class="xingming flexrow xingmingborder">
-    <label>身份证号</label>
+    <label>证件号码</label>
     <input class="card" placeholder="请输入您的证件号码" type="idcard" placeholder-class='placeholder' maxlength="18" bindinput="idcardInput" value="{{userInfo.idcard}}"></input>
   </view>
    <view class="xingming flexrow">
@@ -30,7 +30,7 @@
     </view>
   </picker>
      </view>
-  <view class="hang"></view>
+  <!-- <view class="hang"></view>
   <view class="phototitle">拍摄您的二代身份证</view>
   <view class="flexrow">
     <view class="vmzhengmian flexcloumn" bindtap="bindcamera" data-item="front">
@@ -44,7 +44,10 @@
       <label class="paizhaotishi">点击拍摄国徽面</label>
        <image src="../../images/camera.png" class="camera"></image>
     </view>
-  </view>
+  </view> -->
 
-    <view class="xiayibu" bindtap="bindNext">下一步</view>
+    <view class="xiayibu" bindtap="bindNext">完成</view>
+    <view style="position:fixed;top:999999999999999999999rpx;">
+    <canvas canvas-id='attendCanvasId' style="width:30px; height:30px;"></canvas>
+  </view>
 </view>

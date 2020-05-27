@@ -1,6 +1,6 @@
 <block wx:if="{{SearchOrderData}}">
   <view class="body">
-    <image src="{{roomList[selectedIndex].roomGroup.mainImage==null?'../../images/banner1.png':roomList[selectedIndex].roomGroup.mainImage}}" class="banner"></image>
+    <image mode='aspectFill' src="{{roomList[selectedIndex].roomGroup.mainImage==null?'../../images/banner1.png':roomList[selectedIndex].roomGroup.mainImage}}" class="banner"></image>
     <view class="bannervw">
       <label>{{roomList[selectedIndex].roomGroupName==null?'':roomList[selectedIndex].roomGroupName}}</label>
     </view>
@@ -38,7 +38,7 @@
               </view>
               <view class="roomopen flexrow">
                 <block wx:if="{{item.liveStatus=='READY'||item.liveStatus=='IN'||item.liveStatus=='REGISTER'}}">
-                  <image src="../../images/img_click_open.png" class="clickroomopen" bindtap="bindOpenRoom" data-id="{{item.id}}" data-liveStatus="{{item.liveStatus}}" data-ownerid="{{item.ownerId}}"></image>
+                  <image src="../../images/img_click_open.gif" class="clickroomopen" bindtap="bindOpenRoom" data-id="{{item.id}}" data-liveStatus="{{item.liveStatus}}" data-ownerid="{{item.ownerId}}"></image>
                   <view>
                     <view class="checkin flexrow" bindtap="checkInRegist" data-id="{{item.id}}" data-ownerid="{{item.ownerId}}">
                       <image src="../../images/ic_together.png" class="checkimage"></image>
@@ -60,12 +60,12 @@
       </view>
     </scroll-view>
 
-    <view class="hoteltitle">民宿位置</view>
+    <view class="hoteltitle">房间位置</view>
     <view class="mingsuweizhi" bindtap="get_Location">
-      <label>{{roomList[selectedIndex].address}} </label>
+      <text>{{roomList[selectedIndex].newAddress}} </text>
     </view>
 
-    <view class="hoteltitle">联系房东</view>
+    <view class="hoteltitle">联系管家</view>
     <view class="lianxifangdong" data-tel="{{roomList[selectedIndex].roomGroup.keeperPhone}}" bindtap="get_Tel">
      <label>{{}}    {{roomList[selectedIndex].roomGroup.keeperPhone}} </label>
     </view>
@@ -104,5 +104,24 @@
 
     </view>
   </view>
+</block>
+<block wx:else>
+<view class="body">
+ <block wx:for="{{rooms}}">
+<view class="roomlist flexcloumn">
+<image class="mainImage" mode='aspectFill' src="{{item.mainImage==null?'../../images/img_minsu.png':item.mainImage}}"></image>
+<view class="dianhuaview" bindtap="get_Tel" data-tel="{{item.keeperPhone}}">
+<image class="dianhua" src="../../images/ic_phone.png"></image></view>
+<view class="roomName">{{item.name}}</view>
+<view class="roomNotice" >
+<block wx:if='{{item.distance!=0}}'>距您{{item.distance}}km</block>
 
+</view>
+<view class="roomMap" bindtap="get_roomLocation" data-index="{{index}}">{{item.newAddress}}</view>
+
+
+</view>
+</block>
+<view class="bottomjianju"></view>
+</view>
 </block>

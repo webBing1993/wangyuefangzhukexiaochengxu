@@ -12,26 +12,35 @@ Page({
     SearchOrderData: false,
     identityCheckStatus: false, //是否已经身份核验通过
     roomList: [],
+    rooms: [],
     showRoomLeft: 70, //房卡左边距
     selectedIndex: 0,
     windowWidth: 100,
+    pageIndex: 1,
   },
 
   bindOpenRoom: function(e) {
+    var that = this
     var id = e.currentTarget.dataset.id;
     var liveStatus = e.currentTarget.dataset.livestatus;
     if (liveStatus == 'REGISTER') {
+      var predictCheckinTime = UIhelper.formatDateTime(that.data.roomList[that.data.selectedIndex].predictCheckinTime);
+      app.globalData.currentRoomCheckinTime = predictCheckinTime;
       wx.navigateTo({
         url: '../regist/index?roomOrderId=' + e.currentTarget.dataset.id + '&ownerId=' + e.currentTarget.dataset.ownerid,
       })
     } else {
       //判斷是否到入住時間
-      var that = this
       var predictCheckinTime = UIhelper.formatDateTime(that.data.roomList[that.data.selectedIndex].predictCheckinTime);
+      var predictCheckoutTime = UIhelper.formatDateTime(that.data.roomList[that.data.selectedIndex].predictCheckoutTime);
       console.log("predictCheckinTime " + predictCheckinTime);
       if (new Date() < predictCheckinTime) {
         UIhelper.showMessage('未到入住时间');
-      } else {
+      }
+       else if (predictCheckoutTime < new Date()) {
+        UIhelper.showMessage('订单已过离店时间');
+      } 
+      else {
         wx.navigateTo({
           url: '../room/card?orderId=' + id,
         })
@@ -50,7 +59,12 @@ Page({
   checkInRegist: function(e) {
     var that = this;
     var predictCheckinTime = UIhelper.formatDateTime(that.data.roomList[that.data.selectedIndex].predictCheckinTime);
+    var predictCheckoutTime = UIhelper.formatDateTime(that.data.roomList[that.data.selectedIndex].predictCheckoutTime);
     app.globalData.currentRoomCheckinTime = predictCheckinTime;
+    if (predictCheckoutTime < new Date()) {
+      UIhelper.showMessage('订单已过离店时间');
+      return
+    }
     wx.navigateTo({
       url: '../regist/index?roomOrderId=' + e.currentTarget.dataset.id + '&ownerId=' + e.currentTarget.dataset.ownerid,
     })
@@ -119,6 +133,104 @@ Page({
       })
     });
   },
+  //获取用户地理位置权限
+  getPermission: function(obj) {
+    var that = this;
+    that.setData({
+      pageIndex: 1,
+      rooms: []
+    });
+    wx.getLocation({
+      type: 'wgs84',
+      success: function(res) {
+        var latitude = res.latitude
+        var longitude = res.longitude
+        that.getSearchRooms(longitude, latitude)
+      },
+      fail: function(res) {
+        if (res.errCode == 2) {
+          that.getSearchRooms("", "")
+          UIhelper.showMessage('请打开手机定位开关');
+        } else {
+          wx.getSetting({
+            success: function(res) {
+              var statu = res.authSetting;
+              if (!statu['scope.userLocation']) {
+                wx.showModal({
+                  title: '是否授权当前位置',
+                  content: '需要获取您的地理位置，请确认授权，否则附件房源功能将无法使用',
+                  success: function(tip) {
+                    if (tip.confirm) {
+                      wx.openSetting({
+                        success: function(data) {
+                          if (data.authSetting["scope.userLocation"] === true) {
+                            //授权成功之后，再调用chooseLocation选择地方
+                            wx.getLocation({
+                              type: 'wgs84',
+                              success: function(res) {
+                                var latitude = res.latitude
+                                var longitude = res.longitude
+                                that.getSearchRooms(longitude, latitude)
+                              }
+                            })
+
+                          } else {
+                            //授权失败
+                            that.getSearchRooms("", "")
+                          }
+                        }
+                      })
+                    }
+                  }
+                })
+              }
+            },
+            fail: function(res) {
+              //授权失败
+              that.getSearchRooms("", "")
+            }
+          })
+
+        }
+
+      }
+    })
+  },
+  getSearchRooms: function(longitude, latitude) {
+    var that = this;
+    var data = {
+      // longitude: 121.48789949,
+      // latitude: 31.24916171
+      longitude: longitude,
+      latitude: latitude
+    }
+    UIhelper.getSearchRoom(that.data.pageIndex, 10, data, function(res) {
+      if (res.data.data.length > 0) {
+        for (var i = 0; i < res.data.data.length; i++) {
+          var address = res.data.data[i].address
+          var distance = res.data.data[i].distance
+          if (address != null) {
+            res.data.data[i].address = address.replace('#', '').replace('#', '');
+            var newAddress = res.data.data[i].address + res.data.data[i].addressDetail;
+            if (newAddress.length > 21) {
+              newAddress = newAddress.substring(0, 20) + '...';
+            }
+            res.data.data[i].newAddress = newAddress;
+            res.data.data[i].distance = parseInt(distance / 1000)
+          }
+          that.data.rooms.push(res.data.data[i]);
+        }
+        that.setData({
+          rooms: that.data.rooms,
+          SearchOrderData: false
+        })
+      } else {
+        that.setData({
+          pageIndex: (that.data.pageIndex - 1)
+        })
+      }
+    })
+  },
   /**
    * 弹出框蒙层截断touchmove事件
    */
@@ -159,7 +271,29 @@ Page({
    */
   onReady: function() {
     let that = this;
-    that.loadViewData();
+    //增加小程序分享进入
+    var jsCodeUserId = UIhelper.getJsCodeUserId();
+    if (jsCodeUserId == "") {
+      wx.reLaunch({
+        url: '../user/login'
+      })
+    } else {
+      that.loadViewData();
+    }
+
+    // wx.getSystemInfo({
+    //   success: function (res) {
+    //     if (res.platform == "devtools") {
+
+    //     } else if (res.platform == "ios") {
+    //       console.log('IOS');
+    //       app.globalData.maxRssi=80;
+    //     } else if (res.platform == "android") {
+    //       console.log('Android');
+    //       app.globalData.maxRssi = 90;
+    //     }
+    //   }
+    // })
   },
   loadViewData: function() {
     //显示房间
@@ -171,9 +305,14 @@ Page({
       console.log('查询到订单数据');
       console.log(result);
       if (result.data.data == null || result.data.data.length == 0) {
-        wx.reLaunch({
-          url: '../order/notfound?',
-        })
+        // wx.reLaunch({
+        //   url: '../order/notfound?',
+        // })
+        that.setData({
+          SearchOrderData: false
+        });
+        that.getPermission();
+
       } else {
 
         //保存房间数据
@@ -203,6 +342,10 @@ Page({
             if (roomData[i].roomGroup.addressDetail != null) {
               address = address + roomData[i].roomGroup.addressDetail;
             }
+            var newAddress = address;
+            if (address.length > 21) {
+              newAddress = address.substring(0, 20) + '...';
+            }
             that.data.roomList.push({
               id: id,
               roomName: roomName,
@@ -219,6 +362,7 @@ Page({
               roomGroup: roomData[i].roomGroup,
               roomGroupName: roomData[i].roomGroupName,
               ownerId: roomData[i].ownerId,
+              newAddress: newAddress,
               address: address
             });
           }
@@ -238,17 +382,6 @@ Page({
   },
   get_Location: function(e) {
     var that = this
-    // if (e.currentTarget.dataset.id.latitude != null && e.currentTarget.dataset.id.longitude != null) {
-    //   let latitude = parseFloat(e.currentTarget.dataset.id.latitude)
-    //   let longitude = parseFloat(e.currentTarget.dataset.id.longitude)
-    // }
-    // wx.openLocation({
-    //   latitude: 31.22017,
-    //   longitude: 121.35999,
-    //   scale: 15,
-    //   name: '上海复创互联网科技有限公司',
-    //   address: '上海长宁区金钟路633号B栋2楼'
-    // })
     if (that.data.roomList[that.data.selectedIndex].roomGroup.latitude == null) {
       UIhelper.showMessage('名宿坐标未配置');
     } else {
@@ -260,7 +393,17 @@ Page({
         address: that.data.roomList[that.data.selectedIndex].address
       })
     }
-
+  },
+  get_roomLocation: function(e) {
+    var index = e.currentTarget.dataset.index;
+    var that = this
+    wx.openLocation({
+      latitude: that.data.rooms[index].latitude,
+      longitude: that.data.rooms[index].longitude,
+      scale: 15,
+      name: that.data.rooms[index].name,
+      address: that.data.rooms[index].address + '' + that.data.rooms[index].addressDetail
+    })
   },
   /**
    * 生命周期函数--监听页面显示
@@ -295,16 +438,34 @@ Page({
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: function() {
-
+    var that = this;
+    if (that.data.rooms.length > 0) {
+      that.setData({
+        pageIndex: (that.data.pageIndex + 1)
+      });
+      wx.getLocation({
+        type: 'wgs84',
+        success: function(res) {
+          var latitude = res.latitude
+          var longitude = res.longitude
+          that.getSearchRooms(longitude, latitude)
+        },
+        fail: function(res) {
+          that.getSearchRooms('', '')
+        }
+      })
+    }
   },
 
   /**
    * 用户点击右上角分享
    */
   onShareAppMessage: function(e) {
+    var that = this;
     var roomOrderId = e.target.dataset.roomorderid;
     return {
       title: '欢迎使用电子房卡',
+      imageUrl: that.data.roomList[that.data.selectedIndex].roomGroup.mainImage,
       path: '/pages/user/login?roomOrderId=' + roomOrderId
     }
   }

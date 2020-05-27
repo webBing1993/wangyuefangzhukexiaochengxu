@@ -64,7 +64,18 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh: function () {
-
+    var that=this;
+    UIhelper.getOrderActive(function (result) {
+      wx.stopPullDownRefresh()
+      console.log('查询到订单数据');
+      console.log(result);
+      if (result.data.data!= null&&result.data.data.length>0) {
+        wx.reLaunch({
+          url: '../main/index',
+        })
+      }
+     
+    }) 
   },
 
   /**
